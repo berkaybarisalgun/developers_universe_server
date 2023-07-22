@@ -5,11 +5,8 @@ import com.codenfast.developersuniverse.entitydto.download.DownloadStatusDto;
 import com.codenfast.developersuniverse.entitydto.media.InvoiceLicenceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDownloadSourceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDto;
-import com.codenfast.developersuniverse.entitydto.music.GenreDto;
-import com.codenfast.developersuniverse.entitydto.music.MediaGenreDto;
 import com.codenfast.developersuniverse.feignclients.MediaServiceFeignClient;
 import com.codenfast.developersuniverse.model.CodenfastException;
-import com.codenfast.developersuniverse.model.FilterParam;
 import com.codenfast.developersuniverse.model.OpenGraph;
 import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.utils.StringConstant;
@@ -189,69 +186,6 @@ public class BrowserBotServiceImpl implements BrowserBotService {
 
                 driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/div/div/div/main/div[2]")));
 
-                String genre = StringUtils.capitalize(entry.getKey());
-
-                GenreDto genreDto = checkAndSaveGenre(genre);
-
-                WebElement content = driver.findElement(By.xpath("//*[@id=\"content\"]/div/div/div/main/div[2]"));
-                BrowserUtils.scrollToWebElement(driver, content);
-                Thread.sleep(1000);
-                String lastTrackId = null;
-                List<WebElement> trackList = content.findElements(By.tagName("article"));
-                int i = 0;
-                while (i < trackList.size()) {
-                    WebElement trackArticle = trackList.get(i);
-                    BrowserUtils.scrollToWebElement(driver, trackArticle);
-                    lastTrackId = trackArticle.getAttribute("data-track-id");
-                    WebElement trackMainInfo = trackArticle.findElement(By.className("track-main"));
-                    String url = trackMainInfo.findElement(By.className("download")).getAttribute("href");
-                    log.info("{} : Checking URL Added Before: {}", entry.getKey(), url);
-                    ResponseEntity<List<MediaDto>> mediaDtoListResponseEntity = mediaServiceFeignClient.mediaServiceGrid(RequestGrid.getByProperty("downloadedUrl", url));
-                    if (!HttpStatus.OK.equals(mediaDtoListResponseEntity.getStatusCode())) {
-                        throw new CodenfastException("There is something wrong about checking Media by FeignClient");
-                    }
-                    if ((i + 1) >= trackList.size()) {
-                        BrowserUtils.scrollToBottom(driver);
-                        BrowserUtils.scrollToWebElement(driver, trackArticle);
-                        trackList = content.findElements(By.tagName("article"));
-                    }
-                    if (CollectionUtils.isNotEmpty(mediaDtoListResponseEntity.getBody())) {
-                        checkAndSaveMediaGenre(genreDto, mediaDtoListResponseEntity.getBody().get(0));
-                        i++;
-                        continue;
-                    }
-                    WebElement imageContainer = trackMainInfo.findElement(By.className("reactive-audio-thumbnail-container"));
-                    List<WebElement> imageTagList = imageContainer.findElements(By.tagName("img"));
-
-                    String imageUrl = CollectionUtils.isNotEmpty(imageTagList) ? imageTagList.get(0).getAttribute("src") : null;
-                    WebElement titleElement = trackMainInfo.findElement(By.className("title")).findElement(By.tagName("a"));
-                    String title = titleElement.getText().replaceAll("[^a-zA-Z0-9_\\- ]","_");
-                    String artist = trackMainInfo.findElement(By.className("title")).findElement(By.tagName("h3")).getText().replaceAll("[^a-zA-Z0-9_\\- ]","_");
-                    String attributionUrl = trackArticle.findElement(By.className("audio-attribution-content")).findElement(By.tagName("a")).getAttribute("href");
-                    String attributionLink = attributionUrl.substring(0, attributionUrl.indexOf("?"));
-                    String attributeLink = titleElement.getAttribute("href");
-
-                    MediaDto mediaDto = new MediaDto();
-                    mediaDto.setName(title);
-                    mediaDto.setArtist(artist);
-                    if (StringUtils.isNotBlank(imageUrl)) {
-                        mediaDto.setMediaImage(urlToMedia(imageUrl, finalMediaDownloadSourceDto, "Avatar of " + artist));
-                    }
-                    mediaDto.setDownloadedUrl(url);
-                    mediaDto.setDownloadIntent(nonCopyrightMusicDownloadIntent);
-                    ResponseEntity<MediaDto> mediaDtoResponseEntity = mediaServiceFeignClient.downloadManagerGenerateMediaFromUrl(mediaDto);
-                    mediaDto = mediaDtoResponseEntity.getBody();
-                    mediaDto.setAttributionText("Music by " + artist + " from Pixabay Track ID:"+ lastTrackId);
-                    mediaDto.setAttributionLink(StringProcess.linkAddContextUrl(attributionLink, "/?tab=audio"));
-                    mediaDto.setAttributionSourceLink(attributeLink);
-                    mediaDto.setMediaDownloadSource(finalMediaDownloadSourceDto);
-                    mediaDto.setDownloadIntent(nonCopyrightMusicDownloadIntent);
-                    mediaDto = mediaServiceFeignClient.downloadManagerAddDownloadQueue(mediaDto).getBody();
-                    assert mediaDto != null;
-                    generatePixabayLicence(mediaDto, lastTrackId);
-                    checkAndSaveMediaGenre(genreDto, mediaDto);
-                    i++;
-                }
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
                 throw new CompletionException(e.getMessage(), e);
@@ -330,46 +264,29 @@ public class BrowserBotServiceImpl implements BrowserBotService {
                 .append("==== THIS IS NOT A TAX RECEIPT OR INVOICE ====")
                 .toString();
     }
-
-    private GenreDto checkAndSaveGenre(String genre) throws CodenfastException {
-        ResponseEntity<List<GenreDto>> genreDtoListResponse = mediaServiceFeignClient.genreServiceGrid(RequestGrid.getByProperty(StringConstant.NAME, genre));
-        if (!HttpStatus.OK.equals(genreDtoListResponse.getStatusCode())) {
-            throw new CodenfastException("There is something wrong about checking DownloadIntent by FeignClient");
-        }
-
-        GenreDto genreDto = null;
-        if (CollectionUtils.isNotEmpty(genreDtoListResponse.getBody())) {
-            genreDto = genreDtoListResponse.getBody().get(0);
-        } else {
-            GenreDto newGenre = new GenreDto();
-            newGenre.setName(genre);
-            genreDto = mediaServiceFeignClient.genreServiceSave(newGenre).getBody();
-        }
-        return genreDto;
-    }
-
-    private void checkAndSaveMediaGenre(GenreDto genreDto, MediaDto mediaDto) throws CodenfastException {
-        RequestGrid requestGrid = new RequestGrid();
-        requestGrid.setPage(0);
-        requestGrid.setPageSize(1);
-        requestGrid.setPropertyList(Collections.singletonList("id"));
-        List<FilterParam> mediaGenreFilterList = new java.util.ArrayList<>();
-        Map<String, Object> mediaFilter = new HashMap<>();
-        mediaFilter.put(StringConstant.ID, mediaDto.getId());
-        mediaGenreFilterList.add(new FilterParam("media", StringConstant.EQUAL, mediaFilter));
-        requestGrid.setFilters(mediaGenreFilterList);
-        ResponseEntity<List<MediaGenreDto>> mediaGenreDtoListResponseEntity = mediaServiceFeignClient.mediaGenreServiceGrid(requestGrid);
-        if (!HttpStatus.OK.equals(mediaGenreDtoListResponseEntity.getStatusCode())) {
-            throw new CodenfastException("There is something wrong about checking MediaGenre by FeignClient");
-        }
-
-        if (CollectionUtils.isEmpty(mediaGenreDtoListResponseEntity.getBody())) {
-            MediaGenreDto mediaGenreDto = new MediaGenreDto();
-            mediaGenreDto.setMedia(mediaDto);
-            mediaGenreDto.setGenre(genreDto);
-            mediaServiceFeignClient.mediaGenreServiceSave(mediaGenreDto);
-        }
-    }
+//
+//    private void checkAndSaveMediaGenre(GenreDto genreDto, MediaDto mediaDto) throws CodenfastException {
+//        RequestGrid requestGrid = new RequestGrid();
+//        requestGrid.setPage(0);
+//        requestGrid.setPageSize(1);
+//        requestGrid.setPropertyList(Collections.singletonList("id"));
+//        List<FilterParam> mediaGenreFilterList = new java.util.ArrayList<>();
+//        Map<String, Object> mediaFilter = new HashMap<>();
+//        mediaFilter.put(StringConstant.ID, mediaDto.getId());
+//        mediaGenreFilterList.add(new FilterParam("media", StringConstant.EQUAL, mediaFilter));
+//        requestGrid.setFilters(mediaGenreFilterList);
+//        ResponseEntity<List<MediaGenreDto>> mediaGenreDtoListResponseEntity = mediaServiceFeignClient.mediaGenreServiceGrid(requestGrid);
+//        if (!HttpStatus.OK.equals(mediaGenreDtoListResponseEntity.getStatusCode())) {
+//            throw new CodenfastException("There is something wrong about checking MediaGenre by FeignClient");
+//        }
+//
+//        if (CollectionUtils.isEmpty(mediaGenreDtoListResponseEntity.getBody())) {
+//            MediaGenreDto mediaGenreDto = new MediaGenreDto();
+//            mediaGenreDto.setMedia(mediaDto);
+//            mediaGenreDto.setGenre(genreDto);
+//            mediaServiceFeignClient.mediaGenreServiceSave(mediaGenreDto);
+//        }
+//    }
 
     private void pixabayOpenFilter(WebDriver driver, WebDriverWait driverMainWait) {
         if (CollectionUtils.isNotEmpty(driver.findElements(By.xpath("/html/body/div[1]/div[2]/div/div/div/main/div[1]/button")))

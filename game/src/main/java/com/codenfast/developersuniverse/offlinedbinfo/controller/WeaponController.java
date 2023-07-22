@@ -1,13 +1,13 @@
-package com.codenfast.developersuniverse.media.controller;
+package com.codenfast.developersuniverse.offlinedbinfo.controller;
 
 import com.codenfast.developersuniverse.common.converter.EntityMapper;
 import com.codenfast.developersuniverse.common.converter.EntityToDto;
-import com.codenfast.developersuniverse.common.entity.music.Genre;
-import com.codenfast.developersuniverse.entitydto.music.GenreDto;
-import com.codenfast.developersuniverse.media.service.GenreService;
+import com.codenfast.developersuniverse.common.entity.game.weapon.Weapon;
+import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponDto;
 import com.codenfast.developersuniverse.model.CodenfastException;
 import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.model.TableModel;
+import com.codenfast.developersuniverse.offlinedbinfo.service.WeaponService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +16,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@RequestMapping(path = "genre")
+@RequestMapping(path = "weapon")
 @RestController
 @lombok.RequiredArgsConstructor
 @Slf4j
-public class GenreController {
+public class WeaponController {
 
-    private final GenreService service;
+    private final WeaponService service;
 
     @PostMapping("save")
-    public ResponseEntity<GenreDto> save(@RequestBody GenreDto dto) {
+    public ResponseEntity<WeaponDto> save(@RequestBody WeaponDto dto) {
         try {
             EntityMapper entityMapper = EntityMapper.INSTANCE;
-            Genre entity = entityMapper.map(dto);
+            Weapon entity = entityMapper.map(dto);
             entity = service.save(entity);
-            GenreDto result = new EntityToDto<GenreDto>().convertToDto(entity, GenreDto.class);
+            WeaponDto result = new EntityToDto<WeaponDto>().convertToDto(entity, WeaponDto.class);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -41,12 +41,12 @@ public class GenreController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<GenreDto> update(@RequestBody GenreDto dto) {
+    public ResponseEntity<WeaponDto> update(@RequestBody WeaponDto dto) {
         try {
             EntityMapper entityMapper = EntityMapper.INSTANCE;
-            Genre entity = entityMapper.map(dto);
+            Weapon entity = entityMapper.map(dto);
             entity = service.update(entity);
-            GenreDto result = new EntityToDto<GenreDto>().convertToDto(entity, GenreDto.class);
+            WeaponDto result = new EntityToDto<WeaponDto>().convertToDto(entity, WeaponDto.class);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -59,7 +59,7 @@ public class GenreController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable String id) {
         try {
-            Genre entity = service.delete(id);
+            Weapon entity = service.delete(id);
             return new ResponseEntity<>(entity.getPassive(), HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -70,13 +70,13 @@ public class GenreController {
     }
 
     @PostMapping("grid")
-    public ResponseEntity<List<GenreDto>> grid(@RequestBody RequestGrid requestGrid) {
+    public ResponseEntity<List<WeaponDto>> grid(@RequestBody RequestGrid requestGrid) {
         try {
-            EntityToDto<GenreDto> entityToDto = new EntityToDto<>();
-            List<Genre> list = service.grid(requestGrid);
-            List<GenreDto> resultList = new java.util.ArrayList<>();
-            for (Genre entity : list) {
-                resultList.add(entityToDto.convertToDto(entity, GenreDto.class, requestGrid.getPropertyList()));
+            EntityToDto<WeaponDto> entityToDto = new EntityToDto<>();
+            List<Weapon> list = service.grid(requestGrid);
+            List<WeaponDto> resultList = new java.util.ArrayList<>();
+            for (Weapon entity : list) {
+                resultList.add(entityToDto.convertToDto(entity, WeaponDto.class, requestGrid.getPropertyList()));
             }
             return new ResponseEntity<>(resultList, HttpStatus.OK);
         } catch (CodenfastException e) {
@@ -88,15 +88,15 @@ public class GenreController {
     }
 
     @PostMapping("/grid-table-model")
-    public ResponseEntity<TableModel<GenreDto>> gridTableModel(@RequestBody RequestGrid requestGrid) {
+    public ResponseEntity<TableModel<WeaponDto>> gridTableModel(@RequestBody RequestGrid requestGrid) {
         try {
-            EntityToDto<GenreDto> entityToDto = new EntityToDto<>();
-            TableModel<Genre> tableModel = service.gridTableModel(requestGrid);
-            TableModel<GenreDto> result = new TableModel<>();
+            EntityToDto<WeaponDto> entityToDto = new EntityToDto<>();
+            TableModel<Weapon> tableModel = service.gridTableModel(requestGrid);
+            TableModel<WeaponDto> result = new TableModel<>();
             result.setCount(tableModel.getCount());
-            List<GenreDto> resultList = new java.util.ArrayList<>();
-            for (Genre entity : tableModel.getData()) {
-                resultList.add(entityToDto.convertToDto(entity, GenreDto.class, requestGrid.getPropertyList()));
+            List<WeaponDto> resultList = new java.util.ArrayList<>();
+            for (Weapon entity : tableModel.getData()) {
+                resultList.add(entityToDto.convertToDto(entity, WeaponDto.class, requestGrid.getPropertyList()));
             }
             result.setData(resultList);
             return new ResponseEntity<>(result, HttpStatus.OK);

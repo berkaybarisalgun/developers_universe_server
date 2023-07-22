@@ -6,8 +6,6 @@ import com.codenfast.developersuniverse.entitydto.download.DownloadStatusDto;
 import com.codenfast.developersuniverse.entitydto.media.InvoiceLicenceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDownloadSourceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDto;
-import com.codenfast.developersuniverse.entitydto.music.GenreDto;
-import com.codenfast.developersuniverse.entitydto.music.MediaGenreDto;
 import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.model.TableModel;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -91,27 +89,5 @@ public interface MediaServiceFeignClient {
     ResponseEntity<Void> downloadManagerRetryMedia(@PathVariable String id);
     @GetMapping
     ResponseEntity<List<MediaDto>> downloadManagerWaitingMediaList();
-
-    @PostMapping("genre/save")
-    ResponseEntity<GenreDto> genreServiceSave(@RequestBody GenreDto dto);
-    @PutMapping("genre/update")
-    ResponseEntity<GenreDto> genreServiceUpdate(@RequestBody GenreDto dto);
-    @DeleteMapping("genre/delete/{id}")
-    ResponseEntity<Boolean> genreServiceDelete(@PathVariable String id);
-    @PostMapping("genre/grid")
-    ResponseEntity<List<GenreDto>> genreServiceGrid(@RequestBody RequestGrid requestGrid);
-    @PostMapping("genre/grid-table-model")
-    ResponseEntity<TableModel<GenreDto>> genreServiceGridTableModel(@RequestBody RequestGrid requestGrid);
-
-    @PostMapping("media-genre/save")
-    ResponseEntity<MediaGenreDto> mediaGenreServiceSave(@RequestBody MediaGenreDto dto);
-    @PutMapping("media-genre/update")
-    ResponseEntity<MediaGenreDto> mediaGenreServiceUpdate(@RequestBody MediaGenreDto dto);
-    @DeleteMapping("media-genre/delete/{id}")
-    ResponseEntity<Boolean> mediaGenreServiceDelete(@PathVariable String id);
-    @PostMapping("media-genre/grid")
-    ResponseEntity<List<MediaGenreDto>> mediaGenreServiceGrid(@RequestBody RequestGrid requestGrid);
-    @PostMapping("media-genre/grid-table-model")
-    ResponseEntity<TableModel<MediaGenreDto>> mediaGenreServiceGridTableModel(@RequestBody RequestGrid requestGrid);
 
 }

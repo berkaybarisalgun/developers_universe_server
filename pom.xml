@@ -19,7 +19,7 @@
         <module>discord</module>
         <module>media</module>
         <module>user</module>
-        <module>electronic-archive</module>
+        <module>game</module>
         <module>offline-db-info</module>
     </modules>
     <parent>

@@ -1,11 +1,7 @@
 package com.codenfast.developersuniverse.media.service;
 
-import com.codenfast.developersuniverse.common.converter.EntityToDto;
 import com.codenfast.developersuniverse.common.entity.media.Media;
-import com.codenfast.developersuniverse.common.entity.music.Genre;
-import com.codenfast.developersuniverse.common.entity.music.MediaGenre;
 import com.codenfast.developersuniverse.common.service.BaseServiceImpl;
-import com.codenfast.developersuniverse.entitydto.music.MediaGenreDto;
 import com.codenfast.developersuniverse.media.repository.MediaRepository;
 import com.codenfast.developersuniverse.media.utils.MultipartFileSender;
 import com.codenfast.developersuniverse.model.CodenfastException;
@@ -14,8 +10,6 @@ import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.model.TableModel;
 import com.codenfast.developersuniverse.utils.DateUtil;
 import com.codenfast.developersuniverse.utils.StringConstant;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javazoom.jl.decoder.Bitstream;
@@ -24,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.tika.Tika;
@@ -36,14 +31,12 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
 @Service
 @Slf4j
@@ -51,8 +44,6 @@ import java.util.function.BiFunction;
 public class MediaServiceImpl extends BaseServiceImpl<Media> implements MediaService {
 
     private final MediaRepository repository;
-    private final MediaGenreService mediaGenreService;
-    private final GenreService genreService;
 
     @Value("${developersuniverse.media.container-folder}")
     private String mediaContainerFolder;
@@ -131,6 +122,8 @@ public class MediaServiceImpl extends BaseServiceImpl<Media> implements MediaSer
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.HOURS)
     @Override
     public void generateMediafileLists() {
+        throw new NotImplementedException();
+        /*
         RequestGrid genreRequestGrid = RequestGrid.getByProperty(StringConstant.PASSIVE, false);
         try {
             List<Genre> genreList = genreService.grid(genreRequestGrid);
@@ -191,6 +184,8 @@ public class MediaServiceImpl extends BaseServiceImpl<Media> implements MediaSer
             e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);
         }
+
+         */
     }
 
     @Override
