@@ -2,6 +2,7 @@ package com.codenfast.developersuniverse.common.entity.media;
 
 import com.codenfast.developersuniverse.EntityModel;
 import com.codenfast.developersuniverse.OfflineData;
+import com.codenfast.developersuniverse.annotation.StringForceUppercase;
 import com.codenfast.developersuniverse.common.converter.YesNoConverter;
 import com.codenfast.developersuniverse.common.entity.download.DownloadIntent;
 import com.codenfast.developersuniverse.common.entity.download.DownloadPart;

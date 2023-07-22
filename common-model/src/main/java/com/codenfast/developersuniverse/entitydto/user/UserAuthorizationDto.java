@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @lombok.NoArgsConstructor
 @lombok.EqualsAndHashCode(of = "id")
 @lombok.ToString(of = "id")
-public class UserAuthorizationDto implements EntityModel {
+public class UserAuthorizationDto  {
 
     private String id;
     private Boolean passive = Boolean.FALSE;

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @lombok.EqualsAndHashCode(of = "id")
 @lombok.ToString(of = "id")
 @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-public class MediaDownloadSourceDto implements EntityModel {
+public class MediaDownloadSourceDto  {
     private String id;
     private Boolean passive = Boolean.FALSE;
     private LocalDateTime createTime = null;

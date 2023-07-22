@@ -14,7 +14,7 @@ import java.util.List;
 @lombok.EqualsAndHashCode(of = "id")
 @lombok.ToString(of = "id")
 @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
-public class InvoiceLicenceDto implements EntityModel {
+public class InvoiceLicenceDto  {
     private String id;
     private Boolean passive = Boolean.FALSE;
     private LocalDateTime createTime = null;
