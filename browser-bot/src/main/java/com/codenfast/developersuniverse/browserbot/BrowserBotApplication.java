@@ -1,10 +1,13 @@
 package com.codenfast.developersuniverse.browserbot;
 
+import com.codenfast.developersuniverse.browserbot.service.BrowserBotService;
 import com.codenfast.developersuniverse.configs.CommonModelConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.ByteArrayInputStream;
@@ -31,5 +34,10 @@ public class BrowserBotApplication extends CommonModelConfig {
         log.info("sun.jnu.encoding:{}", System.getProperty("sun.jnu.encoding"));
         log.info("Default Encoding:{}", new InputStreamReader(new ByteArrayInputStream(new byte[]{'D'})).getEncoding());
         new SpringApplicationBuilder(BrowserBotApplication.class).headless(Boolean.FALSE).run(args);
+    }
+
+    @Bean
+    public CommandLineRunner init(BrowserBotService browserBotService) {
+        return (args) -> browserBotService.getWeapons();
     }
 }

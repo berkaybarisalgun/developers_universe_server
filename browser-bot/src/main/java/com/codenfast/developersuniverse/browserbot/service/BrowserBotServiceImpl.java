@@ -21,6 +21,8 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.http.HttpStatus;
@@ -58,7 +60,42 @@ public class BrowserBotServiceImpl implements BrowserBotService {
 
     private final static String PIXABAY_MUSIC = "https://pixabay.com";
 
-    @Scheduled(fixedDelay = 604800000) // Weekly
+    @Override
+    public void getWeapons() {
+        System.setProperty("webdriver.edge.driver", new File("browser-bot\\msedgedriver.exe").getAbsolutePath());
+
+        final String startPage = "https://scum.fandom.com/wiki/All_Weapons";
+
+        EdgeOptions options = new EdgeOptions();
+        options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
+        options.addArguments("--remote-allow-origins=*");
+        options.setCapability("ignore-certificate-errors", true);
+        WebDriver driver = new EdgeDriver(options);
+        driver.manage().window().maximize();
+        driver.manage().deleteAllCookies();
+        WebDriverWait driverWait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
+        driver.get(startPage);
+        driverWait.until(ExpectedConditions.visibilityOfElementLocated( By.xpath("//a[@title='TEC01 M9']")));
+        List<WebElement> tables = driver.findElements(By.className("wikitable"));
+        for(int i = 0; i < 12 ; i++) {
+            WebElement table = tables.get(i);
+            List<WebElement> rows = table.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
+            for (WebElement row : rows) {
+                String name = "";
+                String link = "";
+                WebElement nameColumn = row.findElements(By.tagName("td")).get(1);
+                if(CollectionUtils.isNotEmpty(nameColumn.findElements(By.tagName("a")))) {
+                    name = nameColumn.findElements(By.tagName("a")).get(0).getAttribute("title");
+                    link = nameColumn.findElements(By.tagName("a")).get(0).getAttribute("href");
+                } else {
+                    name = nameColumn.getText();
+                }
+                log.info("name: {}, link: {}", name, link);
+            }
+        }
+    }
+
+//    @Scheduled(fixedDelay = 604800000) // Weekly
     @Override
     public void pixabayMusic() {
 //        HtmlUnitDriver driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_ESR);
@@ -165,6 +202,8 @@ public class BrowserBotServiceImpl implements BrowserBotService {
             executorService.shutdownNow();
         } catch (Exception e) {
             log.error(e.getMessage(),e);
+        } finally {
+
         }
     }
 
