@@ -2,6 +2,7 @@ package com.codenfast.developersuniverse.browserbot.service;
 
 import com.codenfast.developersuniverse.entitydto.download.DownloadIntentDto;
 import com.codenfast.developersuniverse.entitydto.download.DownloadStatusDto;
+import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponDto;
 import com.codenfast.developersuniverse.entitydto.media.InvoiceLicenceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDownloadSourceDto;
 import com.codenfast.developersuniverse.entitydto.media.MediaDto;
@@ -63,6 +64,15 @@ public class BrowserBotServiceImpl implements BrowserBotService {
     @Override
     public void getWeapons() {
         System.setProperty("webdriver.edge.driver", new File("browser-bot\\msedgedriver.exe").getAbsolutePath());
+        try {
+//            Runtime.getRuntime().exec("taskkill /im firefox.exe /f");
+//            Runtime.getRuntime().exec("taskkill /im geckodriver.exe /f");
+            Runtime.getRuntime().exec("taskkill /im msedge.exe /f");
+            Runtime.getRuntime().exec("taskkill /im msedgedriver.exe /f");
+            Thread.sleep(10000);
+        } catch (Exception ignored) {
+
+        }
 
         final String startPage = "https://scum.fandom.com/wiki/All_Weapons";
 
@@ -85,14 +95,33 @@ public class BrowserBotServiceImpl implements BrowserBotService {
                 String link = "";
                 WebElement nameColumn = row.findElements(By.tagName("td")).get(1);
                 if(CollectionUtils.isNotEmpty(nameColumn.findElements(By.tagName("a")))) {
-                    name = nameColumn.findElements(By.tagName("a")).get(0).getAttribute("title");
-                    link = nameColumn.findElements(By.tagName("a")).get(0).getAttribute("href");
+                    WebElement element = nameColumn.findElements(By.tagName("a")).get(0);
+                    name = element.getAttribute("title");
+                    link = element.getAttribute("href");
                 } else {
                     name = nameColumn.getText();
+                }
+                if (StringUtils.isBlank(name) || StringUtils.isBlank(link)) {
+                    continue;
                 }
                 log.info("name: {}, link: {}", name, link);
             }
         }
+    }
+
+    private void getWeaponInfo(WebDriver webDriver, String weaponUrl) {
+        webDriver.get(weaponUrl);
+        WebElement aside = webDriver.findElements(By.tagName("aside")).get(0);
+        WeaponDto weapon = new WeaponDto();
+        weapon.setName(webDriver.findElement(By.xpath("//*[@id=\"mw-content-text\"]/div/aside/h2")).getText());
+//        weapon.setDescription(webDriver.findElements());
+        weapon.setImage(webDriver.findElement(By.className("image-thumbnail")).getAttribute("href"));
+//        weapon.setGridX();
+//        weapon.setGridY();
+//        weapon.setCode();
+//        weapon.setCategory();
+//        weapon.setWeaponAmmoList();
+//        weapon.setAttachmentList();
     }
 
 //    @Scheduled(fixedDelay = 604800000) // Weekly
