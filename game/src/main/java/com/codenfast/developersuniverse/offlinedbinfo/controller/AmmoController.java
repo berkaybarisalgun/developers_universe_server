@@ -16,7 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@RequestMapping(path = "game")
+@RequestMapping(path = "ammo")
 @RestController
 @lombok.RequiredArgsConstructor
 @Slf4j

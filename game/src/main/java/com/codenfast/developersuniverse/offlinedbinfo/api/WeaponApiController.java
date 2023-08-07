@@ -18,32 +18,32 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class WeaponApiController {
 
-    private final WeaponController offlineDbInfoController;
+    private final WeaponController weaponController;
     private final EncryptService encryptService;
 
     @PostMapping("save")
     public String save(@RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, offlineDbInfoController.save(encryptService.readValue(data, encryptData, WeaponDto.class)));
+        return encryptService.writeValue(data, weaponController.save(encryptService.readValue(data, encryptData, WeaponDto.class)));
     }
 
     @PutMapping("update")
     public String update(@RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, offlineDbInfoController.update(encryptService.readValue(data, encryptData, WeaponDto.class)));
+        return encryptService.writeValue(data, weaponController.update(encryptService.readValue(data, encryptData, WeaponDto.class)));
     }
 
     @DeleteMapping("delete/{id}")
     public String delete(@RequestHeader(StringConstant.AHEADER) String data, @PathVariable String id) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, offlineDbInfoController.delete(id));
+        return encryptService.writeValue(data, weaponController.delete(id));
     }
 
     @PostMapping("grid")
     public String grid(HttpServletResponse response, @RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
         response.addHeader(StringConstant.AHEADER, data);
-        return encryptService.writeValue(data, offlineDbInfoController.grid(encryptService.readValue(data, encryptData, RequestGrid.class)));
+        return encryptService.writeValue(data, weaponController.grid(encryptService.readValue(data, encryptData, RequestGrid.class)));
     }
 
     @PostMapping("/grid-table-model")
     public String gridTableModel(@RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, offlineDbInfoController.gridTableModel(encryptService.readValue(data, encryptData, RequestGrid.class)));
+        return encryptService.writeValue(data, weaponController.gridTableModel(encryptService.readValue(data, encryptData, RequestGrid.class)));
     }
 }
