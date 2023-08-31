@@ -4,6 +4,7 @@ import com.codenfast.developersuniverse.common.entity.OfflineDbInfo;
 import com.codenfast.developersuniverse.common.entity.download.DownloadIntent;
 import com.codenfast.developersuniverse.common.entity.download.DownloadPart;
 import com.codenfast.developersuniverse.common.entity.download.DownloadStatus;
+import com.codenfast.developersuniverse.common.entity.game.weapon.Ammo;
 import com.codenfast.developersuniverse.common.entity.game.weapon.Weapon;
 import com.codenfast.developersuniverse.common.entity.game.weapon.WeaponAttachment;
 import com.codenfast.developersuniverse.common.entity.media.InvoiceLicence;
@@ -14,6 +15,7 @@ import com.codenfast.developersuniverse.entitydto.OfflineDbInfoDto;
 import com.codenfast.developersuniverse.entitydto.download.DownloadIntentDto;
 import com.codenfast.developersuniverse.entitydto.download.DownloadPartDto;
 import com.codenfast.developersuniverse.entitydto.download.DownloadStatusDto;
+import com.codenfast.developersuniverse.entitydto.game.weapon.AmmoDto;
 import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponAttachmentDto;
 import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponDto;
 import com.codenfast.developersuniverse.entitydto.media.InvoiceLicenceDto;
@@ -67,4 +69,9 @@ public interface EntityMapper {
     WeaponDto map(Weapon value);
     WeaponAttachment map(WeaponAttachmentDto value);
     WeaponAttachmentDto map(WeaponAttachment value);
+
+    Ammo map(AmmoDto value);
+    AmmoDto map(Ammo value);
+    com.codenfast.developersuniverse.common.entity.game.weapon.Category map(com.codenfast.developersuniverse.entitydto.game.weapon.CategoryDto value);
+    com.codenfast.developersuniverse.entitydto.game.weapon.CategoryDto map(com.codenfast.developersuniverse.common.entity.game.weapon.Category value);
 }

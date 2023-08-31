@@ -1,7 +1,7 @@
 package com.codenfast.developersuniverse.offlinedbinfo.api;
 
 import com.codenfast.developersuniverse.common.entity.game.weapon.Ammo;
-import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponDto;
+import com.codenfast.developersuniverse.entitydto.game.weapon.AmmoDto;
 import com.codenfast.developersuniverse.model.CodenfastSecurityException;
 import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.offlinedbinfo.controller.AmmoController;
@@ -25,12 +25,12 @@ public class AmmoApiController {
 
     @PostMapping("save")
     public String save(@RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, ammoController.save(encryptService.readValue(data, encryptData, WeaponDto.class)));
+        return encryptService.writeValue(data, ammoController.save(encryptService.readValue(data, encryptData, AmmoDto.class)));
     }
 
     @PutMapping("update")
     public String update(@RequestHeader(StringConstant.AHEADER) String data, @RequestBody String encryptData) throws JsonProcessingException, CodenfastSecurityException {
-        return encryptService.writeValue(data, ammoController.update(encryptService.readValue(data, encryptData, WeaponDto.class)));
+        return encryptService.writeValue(data, ammoController.update(encryptService.readValue(data, encryptData, AmmoDto.class)));
     }
 
     @DeleteMapping("delete/{id}")

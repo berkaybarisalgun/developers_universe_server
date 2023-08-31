@@ -2,12 +2,13 @@ package com.codenfast.developersuniverse.offlinedbinfo.controller;
 
 import com.codenfast.developersuniverse.common.converter.EntityMapper;
 import com.codenfast.developersuniverse.common.converter.EntityToDto;
-import com.codenfast.developersuniverse.common.entity.game.weapon.Weapon;
-import com.codenfast.developersuniverse.entitydto.game.weapon.WeaponDto;
+import com.codenfast.developersuniverse.common.entity.game.weapon.Ammo;
+import com.codenfast.developersuniverse.entitydto.game.weapon.AmmoDto;
 import com.codenfast.developersuniverse.model.CodenfastException;
 import com.codenfast.developersuniverse.model.RequestGrid;
 import com.codenfast.developersuniverse.model.TableModel;
-import com.codenfast.developersuniverse.offlinedbinfo.service.WeaponService;
+import com.codenfast.developersuniverse.offlinedbinfo.service.AmmoService;
+import com.codenfast.developersuniverse.offlinedbinfo.service.AmmoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +23,15 @@ import java.util.List;
 @Slf4j
 public class AmmoController {
 
-    private final WeaponService service;
+    private final AmmoService service;
 
     @PostMapping("save")
-    public ResponseEntity<WeaponDto> save(@RequestBody WeaponDto dto) {
+    public ResponseEntity<AmmoDto> save(@RequestBody AmmoDto dto) {
         try {
             EntityMapper entityMapper = EntityMapper.INSTANCE;
-            Weapon entity = entityMapper.map(dto);
+            Ammo entity = entityMapper.map(dto);
             entity = service.save(entity);
-            WeaponDto result = new EntityToDto<WeaponDto>().convertToDto(entity, WeaponDto.class);
+            AmmoDto result = new EntityToDto<AmmoDto>().convertToDto(entity, AmmoDto.class);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -41,12 +42,12 @@ public class AmmoController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<WeaponDto> update(@RequestBody WeaponDto dto) {
+    public ResponseEntity<AmmoDto> update(@RequestBody AmmoDto dto) {
         try {
             EntityMapper entityMapper = EntityMapper.INSTANCE;
-            Weapon entity = entityMapper.map(dto);
+            Ammo entity = entityMapper.map(dto);
             entity = service.update(entity);
-            WeaponDto result = new EntityToDto<WeaponDto>().convertToDto(entity, WeaponDto.class);
+            AmmoDto result = new EntityToDto<AmmoDto>().convertToDto(entity, AmmoDto.class);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -59,7 +60,7 @@ public class AmmoController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable String id) {
         try {
-            Weapon entity = service.delete(id);
+            Ammo entity = service.delete(id);
             return new ResponseEntity<>(entity.getPassive(), HttpStatus.OK);
         } catch (CodenfastException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -70,13 +71,13 @@ public class AmmoController {
     }
 
     @PostMapping("grid")
-    public ResponseEntity<List<WeaponDto>> grid(@RequestBody RequestGrid requestGrid) {
+    public ResponseEntity<List<AmmoDto>> grid(@RequestBody RequestGrid requestGrid) {
         try {
-            EntityToDto<WeaponDto> entityToDto = new EntityToDto<>();
-            List<Weapon> list = service.grid(requestGrid);
-            List<WeaponDto> resultList = new java.util.ArrayList<>();
-            for (Weapon entity : list) {
-                resultList.add(entityToDto.convertToDto(entity, WeaponDto.class, requestGrid.getPropertyList()));
+            EntityToDto<AmmoDto> entityToDto = new EntityToDto<>();
+            List<Ammo> list = service.grid(requestGrid);
+            List<AmmoDto> resultList = new java.util.ArrayList<>();
+            for (Ammo entity : list) {
+                resultList.add(entityToDto.convertToDto(entity, AmmoDto.class, requestGrid.getPropertyList()));
             }
             return new ResponseEntity<>(resultList, HttpStatus.OK);
         } catch (CodenfastException e) {
@@ -88,15 +89,15 @@ public class AmmoController {
     }
 
     @PostMapping("/grid-table-model")
-    public ResponseEntity<TableModel<WeaponDto>> gridTableModel(@RequestBody RequestGrid requestGrid) {
+    public ResponseEntity<TableModel<AmmoDto>> gridTableModel(@RequestBody RequestGrid requestGrid) {
         try {
-            EntityToDto<WeaponDto> entityToDto = new EntityToDto<>();
-            TableModel<Weapon> tableModel = service.gridTableModel(requestGrid);
-            TableModel<WeaponDto> result = new TableModel<>();
+            EntityToDto<AmmoDto> entityToDto = new EntityToDto<>();
+            TableModel<Ammo> tableModel = service.gridTableModel(requestGrid);
+            TableModel<AmmoDto> result = new TableModel<>();
             result.setCount(tableModel.getCount());
-            List<WeaponDto> resultList = new java.util.ArrayList<>();
-            for (Weapon entity : tableModel.getData()) {
-                resultList.add(entityToDto.convertToDto(entity, WeaponDto.class, requestGrid.getPropertyList()));
+            List<AmmoDto> resultList = new java.util.ArrayList<>();
+            for (Ammo entity : tableModel.getData()) {
+                resultList.add(entityToDto.convertToDto(entity, AmmoDto.class, requestGrid.getPropertyList()));
             }
             result.setData(resultList);
             return new ResponseEntity<>(result, HttpStatus.OK);
